@@ -348,7 +348,7 @@ export class HostLobbyModal extends LitElement {
                               type="range"
                               id="nations-count"
                               min="1"
-                              max="50"
+                              max="400"
                               step="1"
                               @input=${this.handleNationsChange}
                               @change=${this.handleNationsChange}
@@ -694,7 +694,7 @@ export class HostLobbyModal extends LitElement {
 
   private handleNationsChange(e: Event) {
     const value = parseInt((e.target as HTMLInputElement).value);
-    if (isNaN(value) || value < 1 || value > 50) {
+    if (isNaN(value) || value < 1 || value > 400) {
       return;
     }
 
