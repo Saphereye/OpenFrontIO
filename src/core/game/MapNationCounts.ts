@@ -12,65 +12,125 @@ import { GameMapType } from "./Game";
 
 const manifests = {
   [GameMapType.Africa]: () =>
-    import("../../../resources/maps/africa/manifest.json"),
+    import("../../../resources/maps/africa/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Asia]: () =>
-    import("../../../resources/maps/asia/manifest.json"),
+    import("../../../resources/maps/asia/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Australia]: () =>
-    import("../../../resources/maps/australia/manifest.json"),
+    import("../../../resources/maps/australia/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Baikal]: () =>
-    import("../../../resources/maps/baikal/manifest.json"),
+    import("../../../resources/maps/baikal/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.BetweenTwoSeas]: () =>
-    import("../../../resources/maps/betweentwoseas/manifest.json"),
+    import("../../../resources/maps/betweentwoseas/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.BlackSea]: () =>
-    import("../../../resources/maps/blacksea/manifest.json"),
+    import("../../../resources/maps/blacksea/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Britannia]: () =>
-    import("../../../resources/maps/britannia/manifest.json"),
+    import("../../../resources/maps/britannia/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.DeglaciatedAntarctica]: () =>
-    import("../../../resources/maps/deglaciatedantarctica/manifest.json"),
+    import("../../../resources/maps/deglaciatedantarctica/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.EastAsia]: () =>
-    import("../../../resources/maps/eastasia/manifest.json"),
+    import("../../../resources/maps/eastasia/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Europe]: () =>
-    import("../../../resources/maps/europe/manifest.json"),
+    import("../../../resources/maps/europe/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.EuropeClassic]: () =>
-    import("../../../resources/maps/europeclassic/manifest.json"),
+    import("../../../resources/maps/europeclassic/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.FalklandIslands]: () =>
-    import("../../../resources/maps/falklandislands/manifest.json"),
+    import("../../../resources/maps/falklandislands/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.FaroeIslands]: () =>
-    import("../../../resources/maps/faroeislands/manifest.json"),
+    import("../../../resources/maps/faroeislands/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.GatewayToTheAtlantic]: () =>
-    import("../../../resources/maps/gatewaytotheatlantic/manifest.json"),
+    import("../../../resources/maps/gatewaytotheatlantic/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.GiantWorldMap]: () =>
-    import("../../../resources/maps/giantworldmap/manifest.json"),
+    import("../../../resources/maps/giantworldmap/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Halkidiki]: () =>
-    import("../../../resources/maps/halkidiki/manifest.json"),
+    import("../../../resources/maps/halkidiki/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Iceland]: () =>
-    import("../../../resources/maps/iceland/manifest.json"),
+    import("../../../resources/maps/iceland/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Italia]: () =>
-    import("../../../resources/maps/italia/manifest.json"),
+    import("../../../resources/maps/italia/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Japan]: () =>
-    import("../../../resources/maps/japan/manifest.json"),
+    import("../../../resources/maps/japan/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Mars]: () =>
-    import("../../../resources/maps/mars/manifest.json"),
+    import("../../../resources/maps/mars/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Mena]: () =>
-    import("../../../resources/maps/mena/manifest.json"),
+    import("../../../resources/maps/mena/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Montreal]: () =>
-    import("../../../resources/maps/montreal/manifest.json"),
+    import("../../../resources/maps/montreal/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.NorthAmerica]: () =>
-    import("../../../resources/maps/northamerica/manifest.json"),
+    import("../../../resources/maps/northamerica/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Oceania]: () =>
-    import("../../../resources/maps/oceania/manifest.json"),
+    import("../../../resources/maps/oceania/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Pangaea]: () =>
-    import("../../../resources/maps/pangaea/manifest.json"),
+    import("../../../resources/maps/pangaea/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Pluto]: () =>
-    import("../../../resources/maps/pluto/manifest.json"),
+    import("../../../resources/maps/pluto/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.SouthAmerica]: () =>
-    import("../../../resources/maps/southamerica/manifest.json"),
+    import("../../../resources/maps/southamerica/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.StraitOfGibraltar]: () =>
-    import("../../../resources/maps/straitofgibraltar/manifest.json"),
+    import("../../../resources/maps/straitofgibraltar/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.World]: () =>
-    import("../../../resources/maps/world/manifest.json"),
+    import("../../../resources/maps/world/manifest.json", {
+      with: { type: "json" },
+    }),
   [GameMapType.Yenisei]: () =>
-    import("../../../resources/maps/yenisei/manifest.json"),
+    import("../../../resources/maps/yenisei/manifest.json", {
+      with: { type: "json" },
+    }),
 } as const;
 
 type ManifestModule = { default: { nations: unknown[] } };
