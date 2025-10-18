@@ -78,9 +78,7 @@ export async function createGameRunner(
     const targetNationCount = humans.length;
     if (nations.length > targetNationCount) {
       // Randomly select nations to match the number of humans
-      nations = nations
-        .sort(() => random.nextFloat() - 0.5)
-        .slice(0, targetNationCount);
+      nations = random.shuffleArray(nations).slice(0, targetNationCount);
     }
   }
 

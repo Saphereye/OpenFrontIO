@@ -35,7 +35,7 @@ describe("HumansVsNations Game Mode", () => {
     });
 
     const players = game.players();
-    const bots = players.filter((p) => p.playerType() === PlayerType.Bot);
+    const bots = players.filter((p) => p.type() === PlayerType.Bot);
 
     // No bots should be present
     expect(bots.length).toBe(0);
