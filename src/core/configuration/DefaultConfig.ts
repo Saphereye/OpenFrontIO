@@ -21,6 +21,7 @@ import {
 } from "../game/Game";
 import { TileRef } from "../game/GameMap";
 import { PlayerView } from "../game/GameView";
+import { getNationCount } from "../game/MapNationCounts";
 import { UserSettings } from "../game/UserSettings";
 import { GameConfig, GameID, TeamCountConfig } from "../Schemas";
 import { NukeType } from "../StatsSchemas";
@@ -44,6 +45,12 @@ const JwksSchema = z.object({
     .min(1),
 });
 
+/**
+ * Configuration for maximum players in FFA and Team game modes.
+ * Each map has three possible lobby sizes [large, medium, small] that are
+ * randomly selected when creating a new lobby to provide variety in game experiences.
+ * The actual size picked is: 30% chance for large, 30% for medium, 40% for small.
+ */
 const numPlayersConfig = {
   [GameMapType.Africa]: [100, 70, 50],
   [GameMapType.Asia]: [50, 40, 30],
@@ -76,40 +83,6 @@ const numPlayersConfig = {
   [GameMapType.World]: [50, 30, 20],
   [GameMapType.Yenisei]: [150, 100, 70],
 } as const satisfies Record<GameMapType, [number, number, number]>;
-
-// Number of nations available per map for Humans Vs Nations mode
-const nationCountByMap = {
-  [GameMapType.Africa]: 36,
-  [GameMapType.Asia]: 25,
-  [GameMapType.Australia]: 7,
-  [GameMapType.Baikal]: 11,
-  [GameMapType.BetweenTwoSeas]: 15,
-  [GameMapType.BlackSea]: 9,
-  [GameMapType.Britannia]: 23,
-  [GameMapType.DeglaciatedAntarctica]: 9,
-  [GameMapType.EastAsia]: 22,
-  [GameMapType.Europe]: 49,
-  [GameMapType.EuropeClassic]: 31,
-  [GameMapType.FalklandIslands]: 12,
-  [GameMapType.FaroeIslands]: 6,
-  [GameMapType.GatewayToTheAtlantic]: 30,
-  [GameMapType.GiantWorldMap]: 97,
-  [GameMapType.Halkidiki]: 8,
-  [GameMapType.Iceland]: 8,
-  [GameMapType.Italia]: 12,
-  [GameMapType.Japan]: 12,
-  [GameMapType.Mars]: 6,
-  [GameMapType.Mena]: 35,
-  [GameMapType.Montreal]: 3,
-  [GameMapType.NorthAmerica]: 49,
-  [GameMapType.Oceania]: 32,
-  [GameMapType.Pangaea]: 29,
-  [GameMapType.Pluto]: 16,
-  [GameMapType.SouthAmerica]: 24,
-  [GameMapType.StraitOfGibraltar]: 7,
-  [GameMapType.World]: 61,
-  [GameMapType.Yenisei]: 6,
-} as const satisfies Record<GameMapType, number>;
 
 export abstract class DefaultServerConfig implements ServerConfig {
   allowedFlares(): string[] | undefined {
@@ -213,9 +186,10 @@ export abstract class DefaultServerConfig implements ServerConfig {
     mode: GameMode,
     numPlayerTeams: TeamCountConfig | undefined,
   ): number {
-    // For Humans Vs Nations mode, max players equals number of nations on the map
+    // For Humans Vs Nations mode, max players equals number of nations on the map.
+    // Nation counts are dynamically loaded from map manifest files to ensure accuracy.
     if (mode === GameMode.HumansVsNations) {
-      return nationCountByMap[map] ?? 20;
+      return getNationCount(map);
     }
 
     const [l, m, s] = numPlayersConfig[map] ?? [50, 30, 20];

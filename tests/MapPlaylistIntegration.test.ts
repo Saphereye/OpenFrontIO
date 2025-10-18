@@ -1,7 +1,12 @@
 import { getServerConfigFromServer } from "../src/core/configuration/ConfigLoader";
 import { GameMapType, GameMode } from "../src/core/game/Game";
+import { initMapNationCounts } from "../src/core/game/MapNationCounts";
 
 describe("MapPlaylist with HumansVsNations", () => {
+  beforeAll(async () => {
+    await initMapNationCounts();
+  });
+
   test("gameConfig should set maxPlayers to nation count for HumansVsNations mode", () => {
     // We can't directly test MapPlaylist because it only generates FFA and Team modes
     // However, we can verify the logic would work by testing the lobbyMaxPlayers function
