@@ -235,23 +235,6 @@ export class SinglePlayerModal extends LitElement {
             <div class="option-cards">
               ${this.gameMode === GameMode.HumansVsNations
                 ? html`
-                    <label for="nations-count" class="option-card">
-                      <input
-                        type="range"
-                        id="nations-count"
-                        min="1"
-                        max="50"
-                        step="1"
-                        @input=${this.handleNationsChange}
-                        @change=${this.handleNationsChange}
-                        .value="${String(this.nations)}"
-                        ?disabled=${this.matchNationsToPlayers}
-                      />
-                      <div class="option-card-title">
-                        <span>${translateText("single_modal.nations")}</span>${this.nations}
-                      </div>
-                    </label>
-                    
                     <label
                       for="match-nations-to-players"
                       class="option-card ${this.matchNationsToPlayers ? "selected" : ""}"
@@ -267,6 +250,26 @@ export class SinglePlayerModal extends LitElement {
                         ${translateText("single_modal.match_nations_to_players")}
                       </div>
                     </label>
+                    
+                    ${!this.matchNationsToPlayers
+                      ? html`
+                          <label for="nations-count" class="option-card">
+                            <input
+                              type="range"
+                              id="nations-count"
+                              min="1"
+                              max="50"
+                              step="1"
+                              @input=${this.handleNationsChange}
+                              @change=${this.handleNationsChange}
+                              .value="${String(this.nations)}"
+                            />
+                            <div class="option-card-title">
+                              <span>${translateText("single_modal.nations")}</span>${this.nations}
+                            </div>
+                          </label>
+                        `
+                      : ""}
                   `
                 : html`
                     <label for="bots-count" class="option-card">
