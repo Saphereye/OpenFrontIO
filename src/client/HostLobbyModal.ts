@@ -271,11 +271,19 @@ export class HostLobbyModal extends LitElement {
                   ${translateText("game_mode.teams")}
                 </div>
               </div>
+              <div
+                class="option-card ${this.gameMode === GameMode.HumansVsNations ? "selected" : ""}"
+                @click=${() => this.handleGameModeSelection(GameMode.HumansVsNations)}
+              >
+                <div class="option-card-title">
+                  ${translateText("game_mode.humans_vs_nations")}
+                </div>
+              </div>
             </div>
           </div>
 
           ${
-            this.gameMode === GameMode.FFA
+            this.gameMode === GameMode.FFA || this.gameMode === GameMode.HumansVsNations
               ? ""
               : html`
                   <!-- Team Count Selection -->

@@ -275,7 +275,8 @@
   },
   "game_mode": {
     "ffa": "Free for All",
-    "teams": "Teams"
+    "teams": "Teams",
+    "humans_vs_nations": "Humans Vs Nations"
   },
   "select_lang": {
     "title": "Select Language"
