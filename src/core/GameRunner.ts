@@ -7,6 +7,7 @@ import {
   Attack,
   Cell,
   Game,
+  GameMode,
   GameUpdates,
   NameViewData,
   Nation,
@@ -58,7 +59,7 @@ export async function createGameRunner(
       ),
   );
 
-  const nations = gameStart.config.disableNPCs
+  let nations = gameStart.config.disableNPCs
     ? []
     : gameMap.nations.map(
         (n) =>
@@ -68,6 +69,20 @@ export async function createGameRunner(
             new PlayerInfo(n.name, PlayerType.FakeHuman, null, random.nextID()),
           ),
       );
+
+  // For HumansVsNations mode, filter nations to match human count
+  if (
+    gameStart.config.gameMode === GameMode.HumansVsNations &&
+    nations.length > 0
+  ) {
+    const targetNationCount = humans.length;
+    if (nations.length > targetNationCount) {
+      // Randomly select nations to match the number of humans
+      nations = nations
+        .sort(() => random.nextFloat() - 0.5)
+        .slice(0, targetNationCount);
+    }
+  }
 
   const game: Game = createGame(
     humans,
@@ -100,7 +115,11 @@ export class GameRunner {
   ) {}
 
   init() {
-    if (this.game.config().bots() > 0) {
+    const isHumansVsNations =
+      this.game.config().gameConfig().gameMode === GameMode.HumansVsNations;
+
+    // Don't spawn bots in HumansVsNations mode
+    if (this.game.config().bots() > 0 && !isHumansVsNations) {
       this.game.addExecution(
         ...this.execManager.spawnBots(this.game.config().numBots()),
       );
