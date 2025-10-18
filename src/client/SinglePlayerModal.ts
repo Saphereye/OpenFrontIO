@@ -37,6 +37,8 @@ export class SinglePlayerModal extends LitElement {
   @state() private selectedDifficulty: Difficulty = Difficulty.Medium;
   @state() private disableNPCs: boolean = false;
   @state() private bots: number = 400;
+  @state() private nations: number = 10;
+  @state() private matchNationsToPlayers: boolean = true;
   @state() private infiniteGold: boolean = false;
   @state() private infiniteTroops: boolean = false;
   @state() private compactMap: boolean = false;
@@ -231,40 +233,81 @@ export class SinglePlayerModal extends LitElement {
               ${translateText("single_modal.options_title")}
             </div>
             <div class="option-cards">
-              <label for="bots-count" class="option-card">
-                <input
-                  type="range"
-                  id="bots-count"
-                  min="0"
-                  max="400"
-                  step="1"
-                  @input=${this.handleBotsChange}
-                  @change=${this.handleBotsChange}
-                  .value="${String(this.bots)}"
-                />
-                <div class="option-card-title">
-                  <span>${translateText("single_modal.bots")}</span>${this
-                    .bots === 0
-                    ? translateText("single_modal.bots_disabled")
-                    : this.bots}
-                </div>
-              </label>
+              ${this.gameMode === GameMode.HumansVsNations
+                ? html`
+                    <label for="nations-count" class="option-card">
+                      <input
+                        type="range"
+                        id="nations-count"
+                        min="1"
+                        max="50"
+                        step="1"
+                        @input=${this.handleNationsChange}
+                        @change=${this.handleNationsChange}
+                        .value="${String(this.nations)}"
+                        ?disabled=${this.matchNationsToPlayers}
+                      />
+                      <div class="option-card-title">
+                        <span>${translateText("single_modal.nations")}</span>${this.nations}
+                      </div>
+                    </label>
+                    
+                    <label
+                      for="match-nations-to-players"
+                      class="option-card ${this.matchNationsToPlayers ? "selected" : ""}"
+                    >
+                      <div class="checkbox-icon"></div>
+                      <input
+                        type="checkbox"
+                        id="match-nations-to-players"
+                        @change=${this.handleMatchNationsToPlayersChange}
+                        .checked=${this.matchNationsToPlayers}
+                      />
+                      <div class="option-card-title">
+                        ${translateText("single_modal.match_nations_to_players")}
+                      </div>
+                    </label>
+                  `
+                : html`
+                    <label for="bots-count" class="option-card">
+                      <input
+                        type="range"
+                        id="bots-count"
+                        min="0"
+                        max="400"
+                        step="1"
+                        @input=${this.handleBotsChange}
+                        @change=${this.handleBotsChange}
+                        .value="${String(this.bots)}"
+                      />
+                      <div class="option-card-title">
+                        <span>${translateText("single_modal.bots")}</span>${this
+                          .bots === 0
+                          ? translateText("single_modal.bots_disabled")
+                          : this.bots}
+                      </div>
+                    </label>
+                  `}
 
-              <label
-                for="singleplayer-modal-disable-npcs"
-                class="option-card ${this.disableNPCs ? "selected" : ""}"
-              >
-                <div class="checkbox-icon"></div>
-                <input
-                  type="checkbox"
-                  id="singleplayer-modal-disable-npcs"
-                  @change=${this.handleDisableNPCsChange}
-                  .checked=${this.disableNPCs}
-                />
-                <div class="option-card-title">
-                  ${translateText("single_modal.disable_nations")}
-                </div>
-              </label>
+              ${this.gameMode !== GameMode.HumansVsNations
+                ? html`
+                    <label
+                      for="singleplayer-modal-disable-npcs"
+                      class="option-card ${this.disableNPCs ? "selected" : ""}"
+                    >
+                      <div class="checkbox-icon"></div>
+                      <input
+                        type="checkbox"
+                        id="singleplayer-modal-disable-npcs"
+                        @change=${this.handleDisableNPCsChange}
+                        .checked=${this.disableNPCs}
+                      />
+                      <div class="option-card-title">
+                        ${translateText("single_modal.disable_nations")}
+                      </div>
+                    </label>
+                  `
+                : ""}
               <label
                 for="singleplayer-modal-instant-build"
                 class="option-card ${this.instantBuild ? "selected" : ""}"
@@ -424,6 +467,18 @@ export class SinglePlayerModal extends LitElement {
     this.bots = value;
   }
 
+  private handleNationsChange(e: Event) {
+    const value = parseInt((e.target as HTMLInputElement).value);
+    if (isNaN(value) || value < 1 || value > 50) {
+      return;
+    }
+    this.nations = value;
+  }
+
+  private handleMatchNationsToPlayersChange(e: Event) {
+    this.matchNationsToPlayers = Boolean((e.target as HTMLInputElement).checked);
+  }
+
   private handleInstantBuildChange(e: Event) {
     this.instantBuild = Boolean((e.target as HTMLInputElement).checked);
   }
@@ -547,6 +602,8 @@ export class SinglePlayerModal extends LitElement {
               disableNPCs: this.disableNPCs,
               maxTimerValue: this.maxTimer ? this.maxTimerValue : undefined,
               bots: this.bots,
+              nations: this.nations,
+              matchNationsToPlayers: this.matchNationsToPlayers,
               infiniteGold: this.infiniteGold,
               donateGold: true,
               donateTroops: true,

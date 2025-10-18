@@ -70,14 +70,18 @@ export async function createGameRunner(
           ),
       );
 
-  // For HumansVsNations mode, filter nations to match human count
+  // For HumansVsNations mode, filter nations based on configuration
   if (
     gameStart.config.gameMode === GameMode.HumansVsNations &&
     nations.length > 0
   ) {
-    const targetNationCount = humans.length;
+    const matchToPlayers = gameStart.config.matchNationsToPlayers ?? true;
+    const targetNationCount = matchToPlayers
+      ? humans.length
+      : (gameStart.config.nations ?? 10);
+    
     if (nations.length > targetNationCount) {
-      // Randomly select nations to match the number of humans
+      // Randomly select nations to match the target count
       nations = random.shuffleArray(nations).slice(0, targetNationCount);
     }
   }
