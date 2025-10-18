@@ -45,12 +45,6 @@ const JwksSchema = z.object({
     .min(1),
 });
 
-/**
- * Configuration for maximum players in FFA and Team game modes.
- * Each map has three possible lobby sizes [large, medium, small] that are
- * randomly selected when creating a new lobby to provide variety in game experiences.
- * The actual size picked is: 30% chance for large, 30% for medium, 40% for small.
- */
 const numPlayersConfig = {
   [GameMapType.Africa]: [100, 70, 50],
   [GameMapType.Asia]: [50, 40, 30],
@@ -186,8 +180,6 @@ export abstract class DefaultServerConfig implements ServerConfig {
     mode: GameMode,
     numPlayerTeams: TeamCountConfig | undefined,
   ): number {
-    // For Humans Vs Nations mode, max players equals number of nations on the map.
-    // Nation counts are dynamically loaded from map manifest files to ensure accuracy.
     if (mode === GameMode.HumansVsNations) {
       return getNationCount(map);
     }

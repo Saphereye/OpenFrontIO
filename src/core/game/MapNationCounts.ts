@@ -1,12 +1,5 @@
 import { GameMapType } from "./Game";
 
-/**
- * This module provides nation counts for each map by directly importing
- * the manifest files. This ensures the counts are always in sync with
- * the actual map data.
- */
-
-// Dynamic imports for all map manifests
 const manifests = {
   [GameMapType.Africa]: () =>
     import("../../../resources/maps/africa/manifest.json"),
@@ -72,13 +65,8 @@ const manifests = {
 
 type ManifestModule = { default: { nations: unknown[] } };
 
-// Cache for loaded nation counts
 let nationCountCache: Record<GameMapType, number> | null = null;
 
-/**
- * Loads nation counts from all map manifest files.
- * This is called once at module initialization to ensure counts are available synchronously.
- */
 async function loadNationCounts(): Promise<Record<GameMapType, number>> {
   const counts = {} as Record<GameMapType, number>;
 
@@ -97,10 +85,6 @@ const initPromise = loadNationCounts().then((counts) => {
   nationCountCache = counts;
 });
 
-/**
- * Gets the number of nations for a given map.
- * This function is synchronous but requires the module to be initialized first.
- */
 export function getNationCount(map: GameMapType): number {
   if (!nationCountCache) {
     throw new Error(
@@ -110,17 +94,10 @@ export function getNationCount(map: GameMapType): number {
   return nationCountCache[map] ?? 20;
 }
 
-/**
- * Ensures nation counts are loaded before use.
- * Call this during application startup.
- */
 export async function initMapNationCounts(): Promise<void> {
   await initPromise;
 }
 
-/**
- * Gets the cached nation counts. Returns null if not yet initialized.
- */
 export function getNationCountsSync(): Record<GameMapType, number> | null {
   return nationCountCache;
 }
