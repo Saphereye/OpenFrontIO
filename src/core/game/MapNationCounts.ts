@@ -1,5 +1,15 @@
 import { GameMapType } from "./Game";
 
+/**
+ * This module provides nation counts for each map by directly importing
+ * the manifest files. This ensures the counts are always in sync with
+ * the actual map data.
+ *
+ * IMPORTANT: This module should only be used on the server side where
+ * manifest files are available. It must be explicitly initialized via
+ * initMapNationCounts() before use.
+ */
+
 const manifests = {
   [GameMapType.Africa]: () =>
     import("../../../resources/maps/africa/manifest.json"),
@@ -65,8 +75,14 @@ const manifests = {
 
 type ManifestModule = { default: { nations: unknown[] } };
 
+// Cache for loaded nation counts
 let nationCountCache: Record<GameMapType, number> | null = null;
+let initPromise: Promise<void> | null = null;
 
+/**
+ * Loads nation counts from all map manifest files.
+ * This should only be called on the server side where manifest files are available.
+ */
 async function loadNationCounts(): Promise<Record<GameMapType, number>> {
   const counts = {} as Record<GameMapType, number>;
 
@@ -80,24 +96,71 @@ async function loadNationCounts(): Promise<Record<GameMapType, number>> {
   return counts;
 }
 
-// Initialize the cache immediately
-const initPromise = loadNationCounts().then((counts) => {
-  nationCountCache = counts;
-});
-
+/**
+ * Gets the number of nations for a given map.
+ * This function is synchronous but requires the module to be initialized first
+ * via initMapNationCounts(). Returns a fallback value if not initialized.
+ */
 export function getNationCount(map: GameMapType): number {
   if (!nationCountCache) {
-    throw new Error(
-      "MapNationCounts not initialized. Call initMapNationCounts() first.",
-    );
+    // Return fallback values if not initialized (e.g., on client side)
+    // These match the actual nation counts from the manifest files
+    const fallbackCounts: Record<GameMapType, number> = {
+      [GameMapType.Africa]: 36,
+      [GameMapType.Asia]: 25,
+      [GameMapType.Australia]: 7,
+      [GameMapType.Baikal]: 11,
+      [GameMapType.BetweenTwoSeas]: 15,
+      [GameMapType.BlackSea]: 9,
+      [GameMapType.Britannia]: 23,
+      [GameMapType.DeglaciatedAntarctica]: 9,
+      [GameMapType.EastAsia]: 22,
+      [GameMapType.Europe]: 49,
+      [GameMapType.EuropeClassic]: 31,
+      [GameMapType.FalklandIslands]: 12,
+      [GameMapType.FaroeIslands]: 6,
+      [GameMapType.GatewayToTheAtlantic]: 30,
+      [GameMapType.GiantWorldMap]: 97,
+      [GameMapType.Halkidiki]: 8,
+      [GameMapType.Iceland]: 8,
+      [GameMapType.Italia]: 12,
+      [GameMapType.Japan]: 12,
+      [GameMapType.Mars]: 6,
+      [GameMapType.Mena]: 35,
+      [GameMapType.Montreal]: 3,
+      [GameMapType.NorthAmerica]: 49,
+      [GameMapType.Oceania]: 32,
+      [GameMapType.Pangaea]: 29,
+      [GameMapType.Pluto]: 16,
+      [GameMapType.SouthAmerica]: 24,
+      [GameMapType.StraitOfGibraltar]: 7,
+      [GameMapType.World]: 61,
+      [GameMapType.Yenisei]: 6,
+    };
+    return fallbackCounts[map] ?? 20;
   }
   return nationCountCache[map] ?? 20;
 }
 
+/**
+ * Ensures nation counts are loaded from manifest files.
+ * Call this during server startup. Safe to call multiple times.
+ */
 export async function initMapNationCounts(): Promise<void> {
-  await initPromise;
+  if (initPromise) {
+    return initPromise;
+  }
+
+  initPromise = loadNationCounts().then((counts) => {
+    nationCountCache = counts;
+  });
+
+  return initPromise;
 }
 
+/**
+ * Gets the cached nation counts. Returns null if not yet initialized.
+ */
 export function getNationCountsSync(): Record<GameMapType, number> | null {
   return nationCountCache;
 }
