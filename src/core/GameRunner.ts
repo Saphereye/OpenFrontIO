@@ -75,9 +75,14 @@ export async function createGameRunner(
     nations.length > 0
   ) {
     const matchToPlayers = gameStart.config.matchNationsToPlayers ?? true;
-    const requested = matchToPlayers
-      ? humans.length
-      : (gameStart.config.nations ?? 10);
+    let requested: number;
+    if (matchToPlayers) {
+      // Inverse formula: N = ceiling((H + 0.819457) / 0.944194)
+      // Given H humans, calculate how many nations we need
+      requested = Math.ceil((humans.length + 0.819457) / 0.944194);
+    } else {
+      requested = gameStart.config.nations ?? 10;
+    }
     const targetNationCount = Math.max(1, Math.min(requested, nations.length));
     if (
       !matchToPlayers &&
