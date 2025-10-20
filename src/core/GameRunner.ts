@@ -77,8 +77,10 @@ export async function createGameRunner(
     const matchToPlayers = gameStart.config.matchNationsToPlayers ?? true;
     let requested: number;
     if (matchToPlayers) {
-      // Inverse formula: N = ceiling((H + 0.819457) / 0.944194)
-      // Given H humans, calculate how many nations we need
+      // Calculate nation count from human count using inverse formula:
+      // N = ceiling((H + 0.819457) / 0.944194)
+      // This is the inverse of the lobby formula H = floor(0.944194 * N - 0.819457)
+      // defined in DefaultConfig.ts lobbyMaxPlayers().
       requested = Math.ceil((humans.length + 0.819457) / 0.944194);
     } else {
       requested = gameStart.config.nations ?? 10;

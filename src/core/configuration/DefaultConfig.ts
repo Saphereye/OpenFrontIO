@@ -182,7 +182,11 @@ export abstract class DefaultServerConfig implements ServerConfig {
   ): number {
     if (mode === GameMode.HumansVsNations) {
       const nationCount = getNationCount(map);
+      // Formula for calculating max human players from nation count:
       // H = floor(0.944194 * N - 0.819457)
+      // This ensures an appropriate ratio between human players and AI nations.
+      // The inverse formula N = ceiling((H + 0.819457) / 0.944194) is used
+      // in GameRunner.ts to determine nations from humans during gameplay.
       return Math.max(1, Math.floor(0.944194 * nationCount - 0.819457));
     }
 
