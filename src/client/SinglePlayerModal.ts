@@ -39,7 +39,6 @@ export class SinglePlayerModal extends LitElement {
   @state() private disableNPCs: boolean = false;
   @state() private bots: number = 400;
   @state() private nations: number = 10;
-  @state() private matchNationsToPlayers: boolean = true;
   @state() private infiniteGold: boolean = false;
   @state() private infiniteTroops: boolean = false;
   @state() private compactMap: boolean = false;
@@ -226,47 +225,23 @@ export class SinglePlayerModal extends LitElement {
             <div class="option-cards">
               ${this.teamCount === HumansVsNations
                 ? html`
-                    <label
-                      for="match-nations-to-players"
-                      class="option-card ${this.matchNationsToPlayers
-                        ? "selected"
-                        : ""}"
-                    >
-                      <div class="checkbox-icon"></div>
+                    <label for="nations-count" class="option-card">
                       <input
-                        type="checkbox"
-                        id="match-nations-to-players"
-                        @change=${this.handleMatchNationsToPlayersChange}
-                        .checked=${this.matchNationsToPlayers}
+                        type="range"
+                        id="bots-count"
+                        min="1"
+                        max="400"
+                        step="1"
+                        @input=${this.handleNationsChange}
+                        @change=${this.handleNationsChange}
+                        .value="${String(this.nations)}"
                       />
                       <div class="option-card-title">
-                        ${translateText(
-                          "single_modal.match_nations_to_players",
-                        )}
+                        <span
+                          >${translateText("single_modal.nations")}</span
+                        >${this.nations}
                       </div>
                     </label>
-
-                    ${!this.matchNationsToPlayers
-                      ? html`
-                          <label for="nations-count" class="option-card">
-                            <input
-                              type="range"
-                              id="bots-count"
-                              min="1"
-                              max="400"
-                              step="1"
-                              @input=${this.handleNationsChange}
-                              @change=${this.handleNationsChange}
-                              .value="${String(this.nations)}"
-                            />
-                            <div class="option-card-title">
-                              <span
-                                >${translateText("single_modal.nations")}</span
-                              >${this.nations}
-                            </div>
-                          </label>
-                        `
-                      : ""}
                   `
                 : html`
                     <label for="bots-count" class="option-card">
@@ -474,12 +449,6 @@ export class SinglePlayerModal extends LitElement {
     this.nations = value;
   }
 
-  private handleMatchNationsToPlayersChange(e: Event) {
-    this.matchNationsToPlayers = Boolean(
-      (e.target as HTMLInputElement).checked,
-    );
-  }
-
   private handleInstantBuildChange(e: Event) {
     this.instantBuild = Boolean((e.target as HTMLInputElement).checked);
   }
@@ -604,7 +573,6 @@ export class SinglePlayerModal extends LitElement {
               maxTimerValue: this.maxTimer ? this.maxTimerValue : undefined,
               bots: this.bots,
               nations: this.nations,
-              matchNationsToPlayers: this.matchNationsToPlayers,
               infiniteGold: this.infiniteGold,
               donateGold: true,
               donateTroops: true,
