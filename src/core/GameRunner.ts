@@ -6,6 +6,7 @@ import {
   AllPlayers,
   Attack,
   Cell,
+  Difficulty,
   Game,
   GameMode,
   GameUpdates,
@@ -74,25 +75,11 @@ export async function createGameRunner(
     gameStart.config.gameMode === GameMode.HumansVsNations &&
     nations.length > 0
   ) {
-    const matchToPlayers = gameStart.config.matchNationsToPlayers ?? true;
-    let requested: number;
-    if (matchToPlayers) {
-      // Calculate nation count from human count using inverse formula:
-      // N = ceil((H + 0.819457) / 0.944194)
-      // This is the inverse of the lobby formula H = floor(0.944194 * N - 0.819457)
-      // defined in DefaultConfig.ts lobbyMaxPlayers().
-      requested = Math.ceil((humans.length + 0.819457) / 0.944194);
-    } else {
-      requested = gameStart.config.nations ?? 10;
-    }
+    // For HumansVsNations mode, use the nations config or default
+    const requested = gameStart.config.nations ?? nations.length;
     const targetNationCount = Math.max(1, Math.min(requested, nations.length));
-    if (matchToPlayers && requested !== targetNationCount) {
-      console.warn(
-        `matchNationsToPlayers requested ${requested} nations but only ${nations.length} available; clamped to ${targetNationCount}.`,
-      );
-    }
+
     if (
-      !matchToPlayers &&
       gameStart.config?.nations !== undefined &&
       gameStart.config.nations !== null &&
       gameStart.config.nations !== targetNationCount
@@ -105,6 +92,24 @@ export async function createGameRunner(
     if (nations.length > targetNationCount) {
       nations = random.shuffleArray(nations).slice(0, targetNationCount);
     }
+
+    // Calculate difficulty based on human percentage
+    const totalPlayers = humans.length + nations.length;
+    const humanPercentage = humans.length / totalPlayers;
+
+    let calculatedDifficulty: Difficulty;
+    if (humanPercentage < 0.25) {
+      calculatedDifficulty = Difficulty.Easy;
+    } else if (humanPercentage < 0.5) {
+      calculatedDifficulty = Difficulty.Medium;
+    } else if (humanPercentage < 0.75) {
+      calculatedDifficulty = Difficulty.Hard;
+    } else {
+      calculatedDifficulty = Difficulty.Impossible;
+    }
+
+    // Override the game config difficulty for HumansVsNations mode
+    gameStart.config.difficulty = calculatedDifficulty;
   }
 
   const game: Game = createGame(

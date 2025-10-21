@@ -8,6 +8,7 @@ import {
   GameMode,
   GameType,
   Gold,
+  HumansVsNations,
   Player,
   PlayerInfo,
   PlayerType,
@@ -21,7 +22,6 @@ import {
 } from "../game/Game";
 import { TileRef } from "../game/GameMap";
 import { PlayerView } from "../game/GameView";
-import { getNationCount } from "../game/MapNationCounts";
 import { UserSettings } from "../game/UserSettings";
 import { GameConfig, GameID, TeamCountConfig } from "../Schemas";
 import { NukeType } from "../StatsSchemas";
@@ -180,13 +180,6 @@ export abstract class DefaultServerConfig implements ServerConfig {
     mode: GameMode,
     numPlayerTeams: TeamCountConfig | undefined,
   ): number {
-    if (mode === GameMode.HumansVsNations) {
-      const nationCount = getNationCount(map);
-      // Formula for calculating max human players from nation count:
-      // H = floor(0.944194 * N - 0.819457)
-      return Math.max(1, Math.floor(0.944194 * nationCount - 0.819457));
-    }
-
     const [l, m, s] = numPlayersConfig[map] ?? [50, 30, 20];
     const r = Math.random();
     const base = r < 0.3 ? l : r < 0.6 ? m : s;
@@ -201,6 +194,9 @@ export abstract class DefaultServerConfig implements ServerConfig {
         break;
       case Quads:
         p -= p % 4;
+        break;
+      case HumansVsNations:
+        // For HumansVsNations, return the base team player count
         break;
       default:
         p -= p % numPlayerTeams;
@@ -319,6 +315,10 @@ export class DefaultConfig implements Config {
   }
 
   playerTeams(): TeamCountConfig {
+    // For HumansVsNations mode, return HumansVsNations as the team config
+    if (this._gameConfig.gameMode === GameMode.HumansVsNations) {
+      return HumansVsNations;
+    }
     return this._gameConfig.playerTeams ?? 0;
   }
 

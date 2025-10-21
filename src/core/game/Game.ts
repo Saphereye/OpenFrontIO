@@ -52,6 +52,10 @@ export type Team = string;
 export const Duos = "Duos" as const;
 export const Trios = "Trios" as const;
 export const Quads = "Quads" as const;
+export const HumansVsNations = "Humans Vs Nations" as const;
+
+// Note: HumansVsNations is available both as a GameMode (for backward compatibility)
+// and as a TeamCountConfig (for consistency with other team types)
 
 export const ColoredTeams: Record<string, Team> = {
   Red: "Red",
