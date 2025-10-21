@@ -1,13 +1,8 @@
 import { getServerConfigFromServer } from "../src/core/configuration/ConfigLoader";
 import { GameMapType, GameMode, HumansVsNations } from "../src/core/game/Game";
-import { initMapNationCounts } from "../src/core/game/MapNationCounts";
 
 describe("LobbyMaxPlayers", () => {
   const config = getServerConfigFromServer();
-
-  beforeAll(async () => {
-    await initMapNationCounts();
-  });
 
   describe("HumansVsNations team configuration", () => {
     test("should return a valid player count for World map", () => {

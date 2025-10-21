@@ -1,12 +1,7 @@
 import { getServerConfigFromServer } from "../src/core/configuration/ConfigLoader";
 import { GameMapType, GameMode, HumansVsNations } from "../src/core/game/Game";
-import { initMapNationCounts } from "../src/core/game/MapNationCounts";
 
 describe("MapPlaylist with HumansVsNations", () => {
-  beforeAll(async () => {
-    await initMapNationCounts();
-  });
-
   test("gameConfig should use normal player count for HumansVsNations team config", () => {
     // HumansVsNations no longer uses the linear regression formula
     // It now uses the standard player count like Team mode
