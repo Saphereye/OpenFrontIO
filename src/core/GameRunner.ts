@@ -10,6 +10,7 @@ import {
   Game,
   GameMode,
   GameUpdates,
+  HumansVsNations,
   NameViewData,
   Nation,
   Player,
@@ -72,7 +73,7 @@ export async function createGameRunner(
       );
 
   if (
-    gameStart.config.gameMode === GameMode.HumansVsNations &&
+    gameStart.config.playerTeams === HumansVsNations &&
     nations.length > 0
   ) {
     // For HumansVsNations mode, use the nations config or default
@@ -144,7 +145,7 @@ export class GameRunner {
 
   init() {
     const isHumansVsNations =
-      this.game.config().gameConfig().gameMode === GameMode.HumansVsNations;
+      this.game.config().playerTeams() === HumansVsNations;
 
     // Don't spawn bots in HumansVsNations mode
     if (this.game.config().bots() > 0 && !isHumansVsNations) {

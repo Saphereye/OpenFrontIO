@@ -9,6 +9,7 @@ import {
   GameMapSize,
   GameMapType,
   GameMode,
+  HumansVsNations,
   Quads,
   Trios,
   UnitType,
@@ -274,20 +275,11 @@ export class HostLobbyModal extends LitElement {
                   ${translateText("game_mode.teams")}
                 </div>
               </div>
-              <div
-                class="option-card ${this.gameMode === GameMode.HumansVsNations ? "selected" : ""}"
-                @click=${() => this.handleGameModeSelection(GameMode.HumansVsNations)}
-              >
-                <div class="option-card-title">
-                  ${translateText("game_mode.humans_vs_nations")}
-                </div>
-              </div>
             </div>
           </div>
 
           ${
-            this.gameMode === GameMode.FFA ||
-            this.gameMode === GameMode.HumansVsNations
+            this.gameMode === GameMode.FFA
               ? ""
               : html`
                   <!-- Team Count Selection -->
@@ -296,7 +288,7 @@ export class HostLobbyModal extends LitElement {
                       ${translateText("host_modal.team_count")}
                     </div>
                     <div class="option-cards">
-                      ${[2, 3, 4, 5, 6, 7, Quads, Trios, Duos].map(
+                      ${[2, 3, 4, 5, 6, 7, Quads, Trios, Duos, HumansVsNations].map(
                         (o) => html`
                           <div
                             class="option-card ${this.teamCount === o
@@ -326,7 +318,7 @@ export class HostLobbyModal extends LitElement {
             </div>
             <div class="option-cards">
               ${
-                this.gameMode === GameMode.HumansVsNations
+                this.teamCount === HumansVsNations
                   ? html`
                       <label
                         for="match-nations-to-players"
@@ -393,7 +385,7 @@ export class HostLobbyModal extends LitElement {
               }
 
                 ${
-                  this.gameMode !== GameMode.HumansVsNations
+                  this.teamCount !== HumansVsNations
                     ? html`
                         <label
                           for="disable-npcs"
@@ -604,7 +596,7 @@ export class HostLobbyModal extends LitElement {
 
         <div class="start-game-button-container">
           ${
-            this.gameMode === GameMode.HumansVsNations &&
+            this.teamCount === HumansVsNations &&
             this.maxPlayers !== undefined &&
             this.clients.length > this.maxPlayers
               ? html`
@@ -625,7 +617,7 @@ export class HostLobbyModal extends LitElement {
             class="start-game-button"
             ?disabled=${
               this.clients.length === 1 ||
-              (this.gameMode === GameMode.HumansVsNations &&
+              (this.teamCount === HumansVsNations &&
                 this.maxPlayers !== undefined &&
                 this.clients.length > this.maxPlayers)
             }
@@ -633,7 +625,7 @@ export class HostLobbyModal extends LitElement {
             ${
               this.clients.length === 1
                 ? translateText("host_modal.waiting")
-                : this.gameMode === GameMode.HumansVsNations &&
+                : this.teamCount === HumansVsNations &&
                     this.maxPlayers !== undefined &&
                     this.clients.length > this.maxPlayers
                   ? translateText("host_modal.too_many_players_button")
@@ -847,7 +839,7 @@ export class HostLobbyModal extends LitElement {
           gameMode: this.gameMode,
           disabledUnits: this.disabledUnits,
           playerTeams: this.teamCount,
-          ...(this.gameMode === GameMode.HumansVsNations
+          ...(this.teamCount === HumansVsNations
             ? {
                 matchNationsToPlayers: this.matchNationsToPlayers,
                 nations: this.matchNationsToPlayers ? undefined : this.nations,

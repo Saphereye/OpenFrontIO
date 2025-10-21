@@ -1,5 +1,5 @@
 import { getServerConfigFromServer } from "../src/core/configuration/ConfigLoader";
-import { GameMapType, GameMode } from "../src/core/game/Game";
+import { GameMapType, GameMode, HumansVsNations } from "../src/core/game/Game";
 import { initMapNationCounts } from "../src/core/game/MapNationCounts";
 
 describe("MapPlaylist with HumansVsNations", () => {
@@ -7,7 +7,7 @@ describe("MapPlaylist with HumansVsNations", () => {
     await initMapNationCounts();
   });
 
-  test("gameConfig should use normal player count for HumansVsNations mode", () => {
+  test("gameConfig should use normal player count for HumansVsNations team config", () => {
     // HumansVsNations no longer uses the linear regression formula
     // It now uses the standard player count like Team mode
     const config = getServerConfigFromServer();
@@ -24,8 +24,8 @@ describe("MapPlaylist with HumansVsNations", () => {
     testCases.forEach(({ map }) => {
       const maxPlayers = config.lobbyMaxPlayers(
         map,
-        GameMode.HumansVsNations,
-        undefined,
+        GameMode.Team,
+        HumansVsNations,
       );
       // Should return a valid number from the numPlayersConfig
       expect(maxPlayers).toBeGreaterThan(0);

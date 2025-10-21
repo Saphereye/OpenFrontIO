@@ -9,6 +9,7 @@ import {
   GameMapType,
   GameMode,
   GameType,
+  HumansVsNations,
   Quads,
   Trios,
   UnitType,
@@ -185,22 +186,10 @@ export class SinglePlayerModal extends LitElement {
                   ${translateText("game_mode.teams")}
                 </div>
               </div>
-              <div
-                class="option-card ${this.gameMode === GameMode.HumansVsNations
-                  ? "selected"
-                  : ""}"
-                @click=${() =>
-                  this.handleGameModeSelection(GameMode.HumansVsNations)}
-              >
-                <div class="option-card-title">
-                  ${translateText("game_mode.humans_vs_nations")}
-                </div>
-              </div>
             </div>
           </div>
 
-          ${this.gameMode === GameMode.FFA ||
-          this.gameMode === GameMode.HumansVsNations
+          ${this.gameMode === GameMode.FFA
             ? ""
             : html`
                 <!-- Team Count Selection -->
@@ -209,7 +198,7 @@ export class SinglePlayerModal extends LitElement {
                     ${translateText("host_modal.team_count")}
                   </div>
                   <div class="option-cards">
-                    ${[2, 3, 4, 5, 6, 7, Quads, Trios, Duos].map(
+                    ${[2, 3, 4, 5, 6, 7, Quads, Trios, Duos, HumansVsNations].map(
                       (o) => html`
                         <div
                           class="option-card ${this.teamCount === o
@@ -235,7 +224,7 @@ export class SinglePlayerModal extends LitElement {
               ${translateText("single_modal.options_title")}
             </div>
             <div class="option-cards">
-              ${this.gameMode === GameMode.HumansVsNations
+              ${this.teamCount === HumansVsNations
                 ? html`
                     <label
                       for="match-nations-to-players"
@@ -299,7 +288,7 @@ export class SinglePlayerModal extends LitElement {
                       </div>
                     </label>
                   `}
-              ${this.gameMode !== GameMode.HumansVsNations
+              ${this.teamCount !== HumansVsNations
                 ? html`
                     <label
                       for="singleplayer-modal-disable-npcs"

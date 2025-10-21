@@ -99,7 +99,7 @@ export class GameImpl implements Game {
     this.unitGrid = new UnitGrid(this._map);
 
     const gameMode = _config.gameConfig().gameMode;
-    if (gameMode === GameMode.Team || gameMode === GameMode.HumansVsNations) {
+    if (gameMode === GameMode.Team) {
       this.populateTeams();
     }
     this.addPlayers();
@@ -464,7 +464,7 @@ export class GameImpl implements Game {
 
   private maybeAssignTeam(player: PlayerInfo): Team | null {
     const gameMode = this._config.gameConfig().gameMode;
-    if (gameMode !== GameMode.Team && gameMode !== GameMode.HumansVsNations) {
+    if (gameMode !== GameMode.Team) {
       return null;
     }
     if (player.playerType === PlayerType.Bot) {
@@ -689,7 +689,7 @@ export class GameImpl implements Game {
 
   teams(): Team[] {
     const gameMode = this._config.gameConfig().gameMode;
-    if (gameMode !== GameMode.Team && gameMode !== GameMode.HumansVsNations) {
+    if (gameMode !== GameMode.Team) {
       return [];
     }
     return [this.botTeam, ...this.playerTeams];

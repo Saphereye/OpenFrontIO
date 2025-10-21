@@ -1,5 +1,5 @@
 import { getServerConfigFromServer } from "../src/core/configuration/ConfigLoader";
-import { GameMapType, GameMode } from "../src/core/game/Game";
+import { GameMapType, GameMode, HumansVsNations } from "../src/core/game/Game";
 import { initMapNationCounts } from "../src/core/game/MapNationCounts";
 
 describe("LobbyMaxPlayers", () => {
@@ -9,12 +9,12 @@ describe("LobbyMaxPlayers", () => {
     await initMapNationCounts();
   });
 
-  describe("HumansVsNations mode", () => {
+  describe("HumansVsNations team configuration", () => {
     test("should return a valid player count for World map", () => {
       const maxPlayers = config.lobbyMaxPlayers(
         GameMapType.World,
-        GameMode.HumansVsNations,
-        undefined,
+        GameMode.Team,
+        HumansVsNations,
       );
       // World has [50, 30, 20] in numPlayersConfig
       expect([20, 30, 50]).toContain(maxPlayers);
@@ -23,8 +23,8 @@ describe("LobbyMaxPlayers", () => {
     test("should return a valid player count for Europe map", () => {
       const maxPlayers = config.lobbyMaxPlayers(
         GameMapType.Europe,
-        GameMode.HumansVsNations,
-        undefined,
+        GameMode.Team,
+        HumansVsNations,
       );
       // Europe has [100, 70, 50] in numPlayersConfig
       expect([50, 70, 100]).toContain(maxPlayers);
@@ -33,8 +33,8 @@ describe("LobbyMaxPlayers", () => {
     test("should return a valid player count for Mars map", () => {
       const maxPlayers = config.lobbyMaxPlayers(
         GameMapType.Mars,
-        GameMode.HumansVsNations,
-        undefined,
+        GameMode.Team,
+        HumansVsNations,
       );
       // Mars has [70, 40, 30] in numPlayersConfig
       expect([30, 40, 70]).toContain(maxPlayers);
@@ -43,8 +43,8 @@ describe("LobbyMaxPlayers", () => {
     test("should return a valid player count for Montreal map", () => {
       const maxPlayers = config.lobbyMaxPlayers(
         GameMapType.Montreal,
-        GameMode.HumansVsNations,
-        undefined,
+        GameMode.Team,
+        HumansVsNations,
       );
       // Montreal has [60, 40, 30] in numPlayersConfig
       expect([30, 40, 60]).toContain(maxPlayers);
@@ -53,8 +53,8 @@ describe("LobbyMaxPlayers", () => {
     test("should return a valid player count for GiantWorldMap", () => {
       const maxPlayers = config.lobbyMaxPlayers(
         GameMapType.GiantWorldMap,
-        GameMode.HumansVsNations,
-        undefined,
+        GameMode.Team,
+        HumansVsNations,
       );
       // GiantWorldMap has [100, 70, 50] in numPlayersConfig
       expect([50, 70, 100]).toContain(maxPlayers);

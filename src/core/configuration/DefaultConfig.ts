@@ -315,10 +315,6 @@ export class DefaultConfig implements Config {
   }
 
   playerTeams(): TeamCountConfig {
-    // For HumansVsNations mode, return HumansVsNations as the team config
-    if (this._gameConfig.gameMode === GameMode.HumansVsNations) {
-      return HumansVsNations;
-    }
     return this._gameConfig.playerTeams ?? 0;
   }
 
@@ -606,10 +602,7 @@ export class DefaultConfig implements Config {
   }
 
   percentageTilesOwnedToWin(): number {
-    if (
-      this._gameConfig.gameMode === GameMode.Team ||
-      this._gameConfig.gameMode === GameMode.HumansVsNations
-    ) {
+    if (this._gameConfig.gameMode === GameMode.Team) {
       return 95;
     }
     return 80;
