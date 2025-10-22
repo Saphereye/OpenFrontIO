@@ -110,7 +110,7 @@ export class GameImpl implements Game {
 
     // HumansVsNations mode always has exactly 2 teams
     if (numPlayerTeams === HumansVsNations) {
-      this.playerTeams = [ColoredTeams.Red, ColoredTeams.Blue];
+      this.playerTeams = ["Humans", "Nations"];
       return;
     }
 
@@ -158,12 +158,10 @@ export class GameImpl implements Game {
     }
 
     if (playerTeams === HumansVsNations) {
-      // All humans go to Red team
-      this._humans.forEach((p) => this.addPlayer(p, ColoredTeams.Red));
-      // All nations go to Blue team
-      this._nations.forEach((n) =>
-        this.addPlayer(n.playerInfo, ColoredTeams.Blue),
-      );
+      // All humans go to "Humans" team
+      this._humans.forEach((p) => this.addPlayer(p, "Humans"));
+      // All nations go to "Nations" team
+      this._nations.forEach((n) => this.addPlayer(n.playerInfo, "Nations"));
       return;
     }
 

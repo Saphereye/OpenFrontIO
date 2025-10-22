@@ -1,5 +1,4 @@
 import {
-  ColoredTeams,
   Game,
   GameMode,
   HumansVsNations,
@@ -29,9 +28,9 @@ describe("HumansVsNations Team Configuration", () => {
     const human1 = game.player("human1");
     const human2 = game.player("human2");
 
-    // All humans should be on the Red team
-    expect(human1.team()).toBe(ColoredTeams.Red);
-    expect(human2.team()).toBe(ColoredTeams.Red);
+    // All humans should be on the "Humans" team
+    expect(human1.team()).toBe("Humans");
+    expect(human2.team()).toBe("Humans");
     expect(human1.isOnSameTeam(human2)).toBe(true);
   });
 
@@ -68,8 +67,8 @@ describe("HumansVsNations Team Configuration", () => {
 
     // Should have exactly 2 teams plus bot team
     expect(teams.length).toBe(3);
-    expect(teams).toContain(ColoredTeams.Red);
-    expect(teams).toContain(ColoredTeams.Blue);
+    expect(teams).toContain("Humans");
+    expect(teams).toContain("Nations");
   });
 
   test("win condition uses team logic", async () => {
