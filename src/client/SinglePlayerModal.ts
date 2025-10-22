@@ -224,7 +224,9 @@ export class SinglePlayerModal extends LitElement {
                         >
                           <div class="option-card-title">
                             ${typeof o === "string"
-                              ? translateText(`public_lobby.teams_${o}`)
+                              ? o === HumansVsNations
+                                ? translateText("public_lobby.teams_hvn")
+                                : translateText(`public_lobby.teams_${o}`)
                               : translateText(`public_lobby.teams`, { num: o })}
                           </div>
                         </div>
@@ -253,9 +255,18 @@ export class SinglePlayerModal extends LitElement {
                         @change=${this.handleNationsChange}
                         .value="${String(this.nations)}"
                       />
+                      <input
+                        type="number"
+                        id="nations-count-input"
+                        min="1"
+                        max="400"
+                        .value=${String(this.nations)}
+                        style="width: 60px; color: black; text-align: right; border-radius: 8px; margin-left: 8px;"
+                        @input=${this.handleNationsChange}
+                        @keydown=${this.handleNationsKeyDown}
+                      />
                       <div class="option-card-title">
-                        <span>${translateText("single_modal.nations")}</span
-                        >${this.nations}
+                        <span>${translateText("single_modal.nations")}</span>
                       </div>
                     </label>
                   `
@@ -463,6 +474,12 @@ export class SinglePlayerModal extends LitElement {
       return;
     }
     this.nations = value;
+  }
+
+  private handleNationsKeyDown(e: KeyboardEvent) {
+    if (["-", "+", "e", "E", "."].includes(e.key)) {
+      e.preventDefault();
+    }
   }
 
   private handleInstantBuildChange(e: Event) {
