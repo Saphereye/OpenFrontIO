@@ -245,7 +245,7 @@ export class SinglePlayerModal extends LitElement {
                     <label for="nations-count" class="option-card">
                       <input
                         type="range"
-                        id="bots-count"
+                        id="nations-count"
                         min="1"
                         max="400"
                         step="1"
