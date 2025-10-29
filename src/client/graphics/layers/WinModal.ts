@@ -119,7 +119,7 @@ export class WinModal extends LitElement implements Layer {
   }
 
   innerHtml() {
-    const statsHtml = this.renderGameStats();
+    const statsHtml = this.renderPlayerStats();
 
     if (isInIframe() || this.rand < 0.25) {
       return html`${statsHtml} ${this.steamWishlist()}`;
@@ -127,7 +127,7 @@ export class WinModal extends LitElement implements Layer {
     return html`${statsHtml} ${this.renderPatternButton()}`;
   }
 
-  renderGameStats() {
+  renderPlayerStats() {
     if (!this.playerStats || !this.allPlayersStats) {
       return html``;
     }
@@ -143,20 +143,20 @@ export class WinModal extends LitElement implements Layer {
 
     // Calculate survival time
     const survivalTime = stats.killedAt
-      ? translateText("win_modal.turns", { count: Number(stats.killedAt) })
+      ? translateText("win_modal.turns", { count: String(stats.killedAt) })
       : translateText("win_modal.not_applicable");
 
     // Calculate total gold
     const goldArray = stats.gold ?? [];
     const totalGold =
-      Number(goldArray[GOLD_INDEX_WORK] ?? 0n) +
-      Number(goldArray[GOLD_INDEX_WAR] ?? 0n) +
-      Number(goldArray[GOLD_INDEX_TRADE] ?? 0n) +
-      Number(goldArray[GOLD_INDEX_STEAL] ?? 0n);
+      (goldArray[GOLD_INDEX_WORK] ?? 0n) +
+      (goldArray[GOLD_INDEX_WAR] ?? 0n) +
+      (goldArray[GOLD_INDEX_TRADE] ?? 0n) +
+      (goldArray[GOLD_INDEX_STEAL] ?? 0n);
 
     // Calculate total troops sent
     const attacksArray = stats.attacks ?? [];
-    const totalTroopsSent = Number(attacksArray[ATTACK_INDEX_SENT] ?? 0n);
+    const totalTroopsSent = attacksArray[ATTACK_INDEX_SENT] ?? 0n;
 
     // Get other stats
     const conquests = stats.conquests ? Number(stats.conquests) : 0;
