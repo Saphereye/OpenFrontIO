@@ -5,6 +5,18 @@ import { ColorPalette, Pattern } from "../../../core/CosmeticSchemas";
 import { EventBus } from "../../../core/EventBus";
 import { GameUpdateType } from "../../../core/game/GameUpdates";
 import { GameView } from "../../../core/game/GameView";
+import { AllPlayersStats } from "../../../core/Schemas";
+import {
+  ATTACK_INDEX_SENT,
+  BOAT_INDEX_SENT,
+  BOMB_INDEX_LAUNCH,
+  GOLD_INDEX_STEAL,
+  GOLD_INDEX_TRADE,
+  GOLD_INDEX_WAR,
+  GOLD_INDEX_WORK,
+  OTHER_INDEX_BUILT,
+  PlayerStats,
+} from "../../../core/StatsSchemas";
 import "../../components/PatternButton";
 import {
   fetchCosmetics,
@@ -13,6 +25,7 @@ import {
 } from "../../Cosmetics";
 import { getUserMe } from "../../jwt";
 import { SendWinnerEvent } from "../../Transport";
+import { renderNumber } from "../../Utils";
 import { Layer } from "./Layer";
 
 @customElement("win-modal")
@@ -33,6 +46,12 @@ export class WinModal extends LitElement implements Layer {
 
   @state()
   private patternContent: TemplateResult | null = null;
+
+  @state()
+  private playerStats: PlayerStats | null = null;
+
+  @state()
+  private allPlayersStats: AllPlayersStats | null = null;
 
   private _title: string;
 
@@ -100,10 +119,241 @@ export class WinModal extends LitElement implements Layer {
   }
 
   innerHtml() {
+    const statsHtml = this.renderGameStats();
+
     if (isInIframe() || this.rand < 0.25) {
-      return this.steamWishlist();
+      return html`${statsHtml} ${this.steamWishlist()}`;
     }
-    return this.renderPatternButton();
+    return html`${statsHtml} ${this.renderPatternButton()}`;
+  }
+
+  renderGameStats() {
+    if (!this.playerStats || !this.allPlayersStats) {
+      return html``;
+    }
+
+    const myPlayer = this.game.myPlayer();
+    if (!myPlayer) return html``;
+
+    const clientID = myPlayer.clientID();
+    if (!clientID) return html``;
+
+    const stats = this.allPlayersStats[clientID];
+    if (!stats) return html``;
+
+    // Calculate survival time
+    const survivalTime = stats.killedAt
+      ? translateText("win_modal.turns", { count: Number(stats.killedAt) })
+      : translateText("win_modal.not_applicable");
+
+    // Calculate total gold
+    const goldArray = stats.gold ?? [];
+    const totalGold =
+      Number(goldArray[GOLD_INDEX_WORK] ?? 0n) +
+      Number(goldArray[GOLD_INDEX_WAR] ?? 0n) +
+      Number(goldArray[GOLD_INDEX_TRADE] ?? 0n) +
+      Number(goldArray[GOLD_INDEX_STEAL] ?? 0n);
+
+    // Calculate total troops sent
+    const attacksArray = stats.attacks ?? [];
+    const totalTroopsSent = Number(attacksArray[ATTACK_INDEX_SENT] ?? 0n);
+
+    // Get other stats
+    const conquests = stats.conquests ? Number(stats.conquests) : 0;
+    const betrayals = stats.betrayals ? Number(stats.betrayals) : 0;
+
+    // Calculate units built
+    const units = stats.units ?? {};
+    const citiesBuilt = units.city?.[OTHER_INDEX_BUILT]
+      ? Number(units.city[OTHER_INDEX_BUILT])
+      : 0;
+    const silosBuilt = units.silo?.[OTHER_INDEX_BUILT]
+      ? Number(units.silo[OTHER_INDEX_BUILT])
+      : 0;
+    const defensePostsBuilt = units.defp?.[OTHER_INDEX_BUILT]
+      ? Number(units.defp[OTHER_INDEX_BUILT])
+      : 0;
+    const factoriesBuilt = units.fact?.[OTHER_INDEX_BUILT]
+      ? Number(units.fact[OTHER_INDEX_BUILT])
+      : 0;
+    const portsBuilt = units.port?.[OTHER_INDEX_BUILT]
+      ? Number(units.port[OTHER_INDEX_BUILT])
+      : 0;
+    const warshipsBuilt = units.wshp?.[OTHER_INDEX_BUILT]
+      ? Number(units.wshp[OTHER_INDEX_BUILT])
+      : 0;
+    const samLaunchersBuilt = units.saml?.[OTHER_INDEX_BUILT]
+      ? Number(units.saml[OTHER_INDEX_BUILT])
+      : 0;
+
+    // Calculate boats launched
+    const boats = stats.boats ?? {};
+    const tradeShipsLaunched = boats.trade?.[BOAT_INDEX_SENT]
+      ? Number(boats.trade[BOAT_INDEX_SENT])
+      : 0;
+    const transportShipsLaunched = boats.trans?.[BOAT_INDEX_SENT]
+      ? Number(boats.trans[BOAT_INDEX_SENT])
+      : 0;
+
+    // Calculate bombs launched
+    const bombs = stats.bombs ?? {};
+    const bombsLaunched =
+      (bombs.abomb?.[BOMB_INDEX_LAUNCH]
+        ? Number(bombs.abomb[BOMB_INDEX_LAUNCH])
+        : 0) +
+      (bombs.hbomb?.[BOMB_INDEX_LAUNCH]
+        ? Number(bombs.hbomb[BOMB_INDEX_LAUNCH])
+        : 0) +
+      (bombs.mirv?.[BOMB_INDEX_LAUNCH]
+        ? Number(bombs.mirv[BOMB_INDEX_LAUNCH])
+        : 0) +
+      (bombs.mirvw?.[BOMB_INDEX_LAUNCH]
+        ? Number(bombs.mirvw[BOMB_INDEX_LAUNCH])
+        : 0);
+
+    return html`
+      <div class="mb-6 bg-black/30 p-4 rounded max-h-[40vh] overflow-y-auto">
+        <h3 class="text-lg font-semibold text-white mb-3 text-center">
+          ${translateText("win_modal.game_report")}
+        </h3>
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <div class="text-gray-300">
+            ${translateText("win_modal.survival_time")}:
+          </div>
+          <div class="text-white font-medium text-right">${survivalTime}</div>
+
+          <div class="text-gray-300">
+            ${translateText("win_modal.total_gold")}:
+          </div>
+          <div class="text-white font-medium text-right">
+            ${renderNumber(totalGold)}
+          </div>
+
+          <div class="text-gray-300">
+            ${translateText("win_modal.total_troops")}:
+          </div>
+          <div class="text-white font-medium text-right">
+            ${renderNumber(totalTroopsSent)}
+          </div>
+
+          <div class="text-gray-300">
+            ${translateText("win_modal.conquests")}:
+          </div>
+          <div class="text-white font-medium text-right">${conquests}</div>
+
+          ${betrayals > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.betrayals")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${betrayals}
+                </div>
+              `
+            : html``}
+          ${bombsLaunched > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.bombs_launched")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${bombsLaunched}
+                </div>
+              `
+            : html``}
+          ${citiesBuilt > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.cities_built")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${citiesBuilt}
+                </div>
+              `
+            : html``}
+          ${silosBuilt > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.silos_built")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${silosBuilt}
+                </div>
+              `
+            : html``}
+          ${defensePostsBuilt > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.defense_posts")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${defensePostsBuilt}
+                </div>
+              `
+            : html``}
+          ${factoriesBuilt > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.factories")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${factoriesBuilt}
+                </div>
+              `
+            : html``}
+          ${portsBuilt > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.ports")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${portsBuilt}
+                </div>
+              `
+            : html``}
+          ${warshipsBuilt > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.warships")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${warshipsBuilt}
+                </div>
+              `
+            : html``}
+          ${samLaunchersBuilt > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.sam_launchers")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${samLaunchersBuilt}
+                </div>
+              `
+            : html``}
+          ${tradeShipsLaunched > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.trade_ships")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${tradeShipsLaunched}
+                </div>
+              `
+            : html``}
+          ${transportShipsLaunched > 0
+            ? html`
+                <div class="text-gray-300">
+                  ${translateText("win_modal.transport_ships")}:
+                </div>
+                <div class="text-white font-medium text-right">
+                  ${transportShipsLaunched}
+                </div>
+              `
+            : html``}
+        </div>
+      </div>
+    `;
   }
 
   renderPatternButton() {
@@ -229,6 +479,16 @@ export class WinModal extends LitElement implements Layer {
     const updates = this.game.updatesSinceLastTick();
     const winUpdates = updates !== null ? updates[GameUpdateType.Win] : [];
     winUpdates.forEach((wu) => {
+      // Store the stats for rendering
+      this.allPlayersStats = wu.allPlayersStats;
+      const myPlayer = this.game.myPlayer();
+      if (myPlayer) {
+        const clientID = myPlayer.clientID();
+        if (clientID && wu.allPlayersStats[clientID]) {
+          this.playerStats = wu.allPlayersStats[clientID];
+        }
+      }
+
       if (wu.winner === undefined) {
         // ...
       } else if (wu.winner[0] === "team") {
