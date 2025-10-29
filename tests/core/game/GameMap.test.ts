@@ -34,7 +34,7 @@ describe("GameMap Edge Wrapping", () => {
       expect(neighbors).toContain(leftEdgeTile);
     });
 
-    test("top-left corner has 4 neighbors including wrap", () => {
+    test("top-left corner has 3 neighbors including wrap", () => {
       // Get tile at top-left corner (x=0, y=0)
       const cornerTile = gameMap.ref(0, 0);
       const neighbors = gameMap.neighbors(cornerTile);
@@ -47,7 +47,7 @@ describe("GameMap Edge Wrapping", () => {
       expect(neighbors).toContain(gameMap.ref(9, 0)); // West (wrapped)
     });
 
-    test("top-right corner has 4 neighbors including wrap", () => {
+    test("top-right corner has 3 neighbors including wrap", () => {
       // Get tile at top-right corner (x=9, y=0)
       const cornerTile = gameMap.ref(9, 0);
       const neighbors = gameMap.neighbors(cornerTile);
