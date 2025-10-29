@@ -143,7 +143,7 @@ export class WinModal extends LitElement implements Layer {
 
     // Calculate survival time
     const survivalTime = stats.killedAt
-      ? translateText("win_modal.turns", { count: String(stats.killedAt) })
+      ? translateText("win_modal.turns", { count: Number(stats.killedAt) })
       : translateText("win_modal.not_applicable");
 
     // Calculate total gold
