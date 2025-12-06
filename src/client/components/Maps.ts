@@ -40,6 +40,7 @@ export const MapDescription: Record<keyof typeof GameMapType, string> = {
   FourIslands: "Four Islands",
   GulfOfStLawrence: "Gulf of St. Lawrence",
   Lisbon: "Lisbon",
+  Generated: "Generated",
 };
 
 @customElement("map-display")
@@ -103,7 +104,31 @@ export class MapDisplay extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.loadMapData();
+
+    // Listen for a custom event to force-refresh the Generated thumbnail
+    // Dispatch this from the Apply Now button: window.dispatchEvent(new CustomEvent("generated-params-apply"))
+    window.addEventListener(
+      "generated-params-apply",
+      this.boundGeneratedApplyHandler,
+    );
   }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener(
+      "generated-params-apply",
+      this.boundGeneratedApplyHandler,
+    );
+  }
+
+  private boundGeneratedApplyHandler = (e: Event) => {
+    // Only refresh if this card is the Generated map
+    if (this.mapKey === "Generated") {
+      // Force reload of data and re-render
+      this.loadMapData();
+      this.requestUpdate();
+    }
+  };
 
   private async loadMapData() {
     if (!this.mapKey) return;

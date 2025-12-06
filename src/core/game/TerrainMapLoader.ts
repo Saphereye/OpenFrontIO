@@ -37,7 +37,7 @@ export async function loadTerrainMap(
   terrainMapFileLoader: GameMapLoader,
 ): Promise<TerrainMapData> {
   const cached = loadedMaps.get(map);
-  if (cached !== undefined) return cached;
+  if (cached !== undefined && map !== GameMapType.Generated) return cached;
   const mapFiles = terrainMapFileLoader.getMapData(map);
   const manifest = await mapFiles.manifest();
 
@@ -68,7 +68,9 @@ export async function loadTerrainMap(
     gameMap: gameMap,
     miniGameMap: miniMap,
   };
-  loadedMaps.set(map, result);
+  if (map !== GameMapType.Generated) {
+    loadedMaps.set(map, result);
+  }
   return result;
 }
 

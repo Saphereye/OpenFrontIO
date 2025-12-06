@@ -103,6 +103,7 @@ export enum GameMapType {
   FourIslands = "Four Islands",
   GulfOfStLawrence = "Gulf of St. Lawrence",
   Lisbon = "Lisbon",
+  Generated = "Generated",
 }
 
 export type GameMapName = keyof typeof GameMapType;
@@ -147,6 +148,7 @@ export const mapCategories: Record<string, GameMapType[]> = {
     GameMapType.Achiran,
     GameMapType.BaikalNukeWars,
     GameMapType.FourIslands,
+    GameMapType.Generated,
   ],
 };
 

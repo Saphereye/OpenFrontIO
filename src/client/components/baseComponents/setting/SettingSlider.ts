@@ -8,6 +8,9 @@ export class SettingSlider extends LitElement {
   @property({ type: Number }) value = 0;
   @property({ type: Number }) min = 0;
   @property({ type: Number }) max = 100;
+  @property({ type: Number }) step = 1;
+  @property() suffix: string = "";
+  @property({ type: Number }) decimals = 0;
   @property({ type: Boolean }) easter = false;
 
   createRenderRoot() {
@@ -44,6 +47,12 @@ export class SettingSlider extends LitElement {
     slider.style.background = `linear-gradient(to right, #2196f3 ${percent}%, #444 ${percent}%)`;
   }
 
+  private formatValue(): string {
+    const factor = Math.pow(10, this.decimals);
+    const rounded = Math.round(this.value * factor) / factor;
+    return `${rounded}${this.suffix}`;
+  }
+
   firstUpdated() {
     const slider = this.renderRoot.querySelector(
       "input[type=range]",
@@ -66,10 +75,11 @@ export class SettingSlider extends LitElement {
           class="setting-input slider full-width"
           min=${this.min}
           max=${this.max}
+          step=${this.step}
           .value=${String(this.value)}
           @input=${this.handleInput}
         />
-        <div class="slider-value">${this.value}%</div>
+        <div class="slider-value">${this.formatValue()}</div>
       </div>
     `;
   }

@@ -15,6 +15,7 @@ import {
   UnitType,
   mapCategories,
 } from "../core/game/Game";
+import { GeneratedParams } from "../core/game/GeneratedParams";
 import { UserSettings } from "../core/game/UserSettings";
 import {
   ClientInfo,
@@ -224,9 +225,227 @@ export class HostLobbyModal extends LitElement {
                   />
                 </div>
                 <div class="option-card-title">
-                  ${translateText("map.random")}
+                  Shuffle
                 </div>
               </div>
+
+              <div
+                class="option-card generated-map ${
+                  !this.useRandomMap &&
+                  this.selectedMap === GameMapType.Generated
+                    ? "selected"
+                    : ""
+                }"
+                @click=${() => this.handleMapSelection(GameMapType.Generated)}
+              >
+                <div class="option-image">Generated</div>
+                <div class="option-card-title">Generated</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="options-section">
+            <div class="option-title">Generated Map Parameters</div>
+            <div class="option-cards">
+              <setting-slider
+                .label=${"Octaves"}
+                .description=${"Number of noise layers"}
+                .min=${1}
+                .max=${12}
+                .step=${1}
+                .decimals=${0}
+                .suffix=${""}
+                .value=${GeneratedParams.get().octaves}
+                @change=${(e: Event) => {
+                  const detailVal =
+                    (e as CustomEvent).detail &&
+                    (e as CustomEvent).detail.value;
+                  const raw =
+                    detailVal !== undefined
+                      ? detailVal
+                      : (e.target as HTMLInputElement)?.value;
+                  const parsed = Math.floor(Number(raw));
+                  const v = Math.max(
+                    1,
+                    Math.min(12, isNaN(parsed) ? 1 : parsed),
+                  );
+                  GeneratedParams.set({ octaves: v });
+                }}
+              ></setting-slider>
+
+              <setting-slider
+                .label=${"Lacunarity"}
+                .description=${"Frequency multiplier between octaves"}
+                .min=${1}
+                .max=${5}
+                .step=${0.1}
+                .decimals=${1}
+                .suffix=${""}
+                .value=${GeneratedParams.get().lacunarity}
+                @change=${(e: Event) => {
+                  const detailVal =
+                    (e as CustomEvent).detail &&
+                    (e as CustomEvent).detail.value;
+                  const raw =
+                    detailVal !== undefined
+                      ? detailVal
+                      : (e.target as HTMLInputElement)?.value;
+                  const num = Number(raw);
+                  const v = Math.max(
+                    1.0,
+                    Math.min(5.0, isNaN(num) ? 1.0 : num),
+                  );
+                  GeneratedParams.set({ lacunarity: v });
+                }}
+              ></setting-slider>
+
+              <setting-slider
+                .label=${"Persistence"}
+                .description=${"Amplitude multiplier between octaves"}
+                .min=${0.1}
+                .max=${1.0}
+                .step=${0.05}
+                .decimals=${2}
+                .suffix=${""}
+                .value=${GeneratedParams.get().persistence}
+                @change=${(e: Event) => {
+                  const detailVal =
+                    (e as CustomEvent).detail &&
+                    (e as CustomEvent).detail.value;
+                  const raw =
+                    detailVal !== undefined
+                      ? detailVal
+                      : (e.target as HTMLInputElement)?.value;
+                  const num = Number(raw);
+                  const v = Math.max(
+                    0.1,
+                    Math.min(1.0, isNaN(num) ? 0.1 : num),
+                  );
+                  GeneratedParams.set({ persistence: v });
+                }}
+              ></setting-slider>
+
+              <setting-slider
+                .label=${"Land Threshold"}
+                .description=${"Threshold for deciding land vs water"}
+                .min=${0}
+                .max=${1}
+                .step=${0.01}
+                .decimals=${2}
+                .suffix=${""}
+                .value=${GeneratedParams.get().landThreshold}
+                @change=${(e: Event) => {
+                  const detailVal =
+                    (e as CustomEvent).detail &&
+                    (e as CustomEvent).detail.value;
+                  const raw =
+                    detailVal !== undefined
+                      ? detailVal
+                      : (e.target as HTMLInputElement)?.value;
+                  const num = Number(raw);
+                  const v = Math.max(
+                    0.0,
+                    Math.min(1.0, isNaN(num) ? 0.0 : num),
+                  );
+                  GeneratedParams.set({ landThreshold: v });
+                }}
+              ></setting-slider>
+
+              <setting-slider
+                .label=${"Contrast"}
+                .description=${"Elevation contrast (gamma). Lower = more contrast"}
+                .min=${0.5}
+                .max=${1.5}
+                .step=${0.05}
+                .decimals=${2}
+                .suffix=${""}
+                .value=${GeneratedParams.get().contrastGamma}
+                @change=${(e: Event) => {
+                  const detailVal =
+                    (e as CustomEvent).detail &&
+                    (e as CustomEvent).detail.value;
+                  const raw =
+                    detailVal !== undefined
+                      ? detailVal
+                      : (e.target as HTMLInputElement)?.value;
+                  const num = Number(raw);
+                  const v = Math.max(
+                    0.5,
+                    Math.min(1.5, isNaN(num) ? 0.8 : num),
+                  );
+                  GeneratedParams.set({ contrastGamma: v });
+                }}
+              ></setting-slider>
+
+              <setting-slider
+                .label=${"Smoothing"}
+                .description=${"Magnitude smoothing radius"}
+                .min=${0}
+                .max=${2}
+                .step=${1}
+                .decimals=${0}
+                .suffix=${""}
+                .value=${GeneratedParams.get().smoothingRadius}
+                @change=${(e: Event) => {
+                  const detailVal =
+                    (e as CustomEvent).detail &&
+                    (e as CustomEvent).detail.value;
+                  const raw =
+                    detailVal !== undefined
+                      ? detailVal
+                      : (e.target as HTMLInputElement)?.value;
+                  const parsed = Math.floor(Number(raw));
+                  const v = Math.max(
+                    0,
+                    Math.min(2, isNaN(parsed) ? 1 : parsed),
+                  );
+                  GeneratedParams.set({ smoothingRadius: v });
+                }}
+              ></setting-slider>
+
+              <label class="option-card">
+                <div class="option-card-title">Ridge Accent</div>
+                <input
+                  type="checkbox"
+                  .checked=${GeneratedParams.get().ridgeAccent}
+                  @change=${(e: Event) => {
+                    const checked = (e.target as HTMLInputElement).checked;
+                    GeneratedParams.set({ ridgeAccent: checked });
+                  }}
+                />
+                <div class="option-card-title">Accentuate mountain peaks</div>
+              </label>
+
+              <label class="option-card">
+                <div class="option-card-title">Seed</div>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="${GeneratedParams.get().seed}"
+                  @input=${(e: any) => {
+                    const v = Math.max(0, parseInt(e.target.value) >>> 0);
+                    GeneratedParams.set({ seed: v });
+                  }}
+                />
+                <div class="option-card-title">Deterministic generation</div>
+              </label>
+              <label class="option-card">
+                <div class="option-card-title">Randomize Seed</div>
+                <input
+                  type="checkbox"
+                  @change=${() => {
+                    GeneratedParams.set({
+                      seed: Math.floor(Math.random() * 0xffffffff) >>> 0,
+                    });
+                  }}
+                />
+                <div class="option-card-title">New seed on toggle</div>
+              </label>
+
+              <!-- Width slider removed for fixed map size -->
+
+              <!-- Height slider removed for fixed map size -->
             </div>
           </div>
 
@@ -808,6 +1027,17 @@ export class HostLobbyModal extends LitElement {
   }
 
   private async startGame() {
+    // If generated map is selected, randomize parameters before creating lobby
+    if (this.selectedMap === GameMapType.Generated) {
+      GeneratedParams.set({
+        seed: Math.floor(Math.random() * 0xffffffff) >>> 0,
+        octaves: Math.floor(1 + Math.random() * 11), // 1-12
+        lacunarity: Math.round((1 + Math.random() * 4) * 10) / 10, // 1.0-5.0
+        persistence: Math.round((0.1 + Math.random() * 0.9) * 20) / 20, // 0.1-1.0
+        landThreshold: Math.round((0.35 + Math.random() * 0.4) * 100) / 100, // 0.35-0.75
+      });
+    }
+
     await this.putGameConfig();
     console.log(
       `Starting private game with map: ${GameMapType[this.selectedMap as keyof typeof GameMapType]} ${this.useRandomMap ? " (Randomly selected)" : ""}`,

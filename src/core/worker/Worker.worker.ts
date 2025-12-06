@@ -1,7 +1,10 @@
 import version from "../../../resources/version.txt";
 import { createGameRunner, GameRunner } from "../GameRunner";
 import { FetchGameMapLoader } from "../game/FetchGameMapLoader";
+import { GameMapType } from "../game/Game";
 import { ErrorUpdate, GameUpdateViewData } from "../game/GameUpdates";
+import { GeneratedMapLoader } from "../game/GeneratedMapLoader";
+import { GeneratedParams } from "../game/GeneratedParams";
 import {
   AttackAveragePositionResultMessage,
   InitializedMessage,
@@ -15,7 +18,9 @@ import {
 
 const ctx: Worker = self as any;
 let gameRunner: Promise<GameRunner> | null = null;
-const mapLoader = new FetchGameMapLoader(`/maps`, version);
+let mapLoader: {
+  getMapData(map: GameMapType): any;
+};
 
 function gameUpdate(gu: GameUpdateViewData | ErrorUpdate) {
   // skip if ErrorUpdate
@@ -41,6 +46,34 @@ ctx.addEventListener("message", async (e: MessageEvent<MainThreadMessage>) => {
       break;
     case "init":
       try {
+        // Construct a fresh GeneratedMapLoader with current params on each call
+        // Dev-only log: snapshot of GeneratedParams used at worker init
+        {
+          const p = GeneratedParams.get();
+          console.log("Worker init GeneratedParams snapshot:", {
+            seed: p.seed,
+            width: p.width,
+            height: p.height,
+            landThreshold: p.landThreshold,
+            contrastGamma: p.contrastGamma,
+            smoothingRadius: p.smoothingRadius,
+            ridgeAccent: p.ridgeAccent,
+            octaves: p.octaves,
+            lacunarity: p.lacunarity,
+            persistence: p.persistence,
+          });
+        }
+        mapLoader = {
+          getMapData(map: GameMapType) {
+            if (map === GameMapType.Generated) {
+              return new GeneratedMapLoader(GeneratedParams.get()).getMapData(
+                map,
+              );
+            }
+            return new FetchGameMapLoader(`/maps`, version).getMapData(map);
+          },
+        };
+
         gameRunner = createGameRunner(
           message.gameStartInfo,
           message.clientID,
